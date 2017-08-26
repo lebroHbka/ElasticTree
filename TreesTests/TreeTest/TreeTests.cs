@@ -1,52 +1,42 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using ElasticTree.src;
-using ElasticTree.src.Composite;
+using Trees.src.Tree;
 
 namespace ElasticTreeTest
 {
     [TestClass]
     public class TreeTests
     {
-        SimpleData d0, d2, d3, d4, d5, d6, d7, d8; 
-        Tree tree;
+        Data d0, d2, d3, d4, d5, d6, d7, d8; 
+        Tree<Data> tree;
 
-        Component root1, n2, n3, n4, n5, n6, n7, n8;
+        Node<Data> root, n2, n3, n4, n5, n6, n7, n8;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            
-            d0 = new SimpleData(new List<int> { 1 });
-            d2 = new SimpleData(new List<int> { 2 });
-            d3 = new SimpleData(new List<int> { 3 });
-            d4 = new SimpleData(new List<int> { 4 });
-            d5 = new SimpleData(new List<int> { 5 });
-            d6 = new SimpleData(new List<int> { 6 });
-            d7 = new SimpleData(new List<int> { 7 });
-            d8 = new SimpleData(new List<int> { 8 });
+            d0 = new Data(new List<int> { 1 });
+            d2 = new Data(new List<int> { 2 });
+            d3 = new Data(new List<int> { 3 });
+            d4 = new Data(new List<int> { 4 });
+            d5 = new Data(new List<int> { 5 });
+            d6 = new Data(new List<int> { 6 });
+            d7 = new Data(new List<int> { 7 });
+            d8 = new Data(new List<int> { 8 });
 
-            root1 = new Node(d0);
-            n2 = new Node(d2);
-            n3 = new Node(d3);
-            n4 = new Node(d4);
-            n5 = new Node(d5);
-            n6 = new Node(d6);
-            n7 = new Node(d7);
-            n8 = new Node(d8);
-            tree = new Tree(root1);
-
+            root = new Node<Data>(d0);
+            n2 = new Node<Data>(d2);
+            n3 = new Node<Data>(d3);
+            n4 = new Node<Data>(d4);
+            n5 = new Node<Data>(d5);
+            n6 = new Node<Data>(d6);
+            n7 = new Node<Data>(d7);
+            n8 = new Node<Data>(d8);
+            tree = new Tree<Data>(root);
         }
 
         #region Add node
-        [ExpectedException(typeof(InvalidOperationException))]
-        [TestMethod]
-        public void AddNode_addToNotExistedParent_test()
-        {
-            tree.AddNode(n2, n3);
-        }
-
         [ExpectedException(typeof(NullReferenceException))]
         [TestMethod]
         public void AddNode_addNullObject_test()
@@ -61,26 +51,22 @@ namespace ElasticTreeTest
             tree.AddNode(null, n2);
         }
 
-
         [TestMethod]
         public void AddNode_addNodeNoChild_test()
         {
             // check start condition
-            var expectedTreeIncludedNodes = new List<Component> { root1 };
-            var expectedRootChildren = new List<Component> { };
-            Component expectedN2Parent = null;
-            Component expectedN3Parent = null;
+            var expectedRootChildren = new List<Node<Data>> { };
+            Node<Data> expectedN2Parent = null;
+            Node<Data> expectedN3Parent = null;
             var expectedN2Level = 0;
             var expectedN3Level = 0;
 
-            var actualTreeIncludedNodes = tree.IncludedNodes;
             var actualRootChildren = tree.RootNode.Children;
             var actualN2Parent = n2.Parent;
             var actualN3Parent = n3.Parent;
             var actualN2Level = n2.Level;
             var actualN3Level = n3.Level;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
             Assert.AreEqual(expectedN2Parent, actualN2Parent);
             Assert.AreEqual(expectedN3Parent, actualN3Parent);
@@ -90,21 +76,18 @@ namespace ElasticTreeTest
 
             // check after add first node to root
             tree.AddNode(tree.RootNode, n2);
-            expectedTreeIncludedNodes = new List<Component> { root1, n2 };
-            expectedRootChildren = new List<Component> { n2 };
+            expectedRootChildren = new List<Node<Data>> { n2 };
             expectedN2Parent = tree.RootNode;
             expectedN3Parent = null;
             expectedN2Level = 1;
             expectedN3Level = 0;
 
-            actualTreeIncludedNodes = tree.IncludedNodes;
             actualRootChildren = tree.RootNode.Children;
             actualN2Parent = n2.Parent;
             actualN3Parent = n3.Parent;
             actualN2Level = n2.Level;
             actualN3Level = n3.Level;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
             Assert.AreEqual(expectedN2Parent, actualN2Parent);
             Assert.AreEqual(expectedN3Parent, actualN3Parent);
@@ -114,21 +97,18 @@ namespace ElasticTreeTest
 
             // check after add second node to root
             tree.AddNode(tree.RootNode, n3);
-            expectedTreeIncludedNodes = new List<Component> { root1, n2, n3 };
-            expectedRootChildren = new List<Component> { n2, n3 };
+            expectedRootChildren = new List<Node<Data>> { n2, n3 };
             expectedN2Parent = tree.RootNode;
             expectedN3Parent = tree.RootNode;
             expectedN2Level = 1;
             expectedN3Level = 1;
 
-            actualTreeIncludedNodes = tree.IncludedNodes;
             actualRootChildren = tree.RootNode.Children;
             actualN2Parent = n2.Parent;
             actualN3Parent = n3.Parent;
             actualN2Level = n2.Level;
             actualN3Level = n3.Level;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
             Assert.AreEqual(expectedN2Parent, actualN2Parent);
             Assert.AreEqual(expectedN3Parent, actualN3Parent);
@@ -154,26 +134,23 @@ namespace ElasticTreeTest
              *      (5)
              */
             // check start condition
-            var expectedTreeIncludedNodes = new List<Component> { root1, n2, n3 };
-            var expectedN2Children = new List<Component> { };
-            Component expectedN4Parent = null;
-            Component expectedN5Parent = n4;
+            var expectedN2Children = new List<Node<Data>> { };
+            Node<Data> expectedN4Parent = null;
+            Node<Data> expectedN5Parent = n4;
             var expectedN4Level = 0;
             var expectedN5Level = 1;
 
             tree.AddNode(tree.RootNode, n2);
             tree.AddNode(tree.RootNode, n3);
-            n4.AddChild(n5);
-            n5.SetParent(n4);
+            n4.Children.Add(n5);
+            n5.Parent = n4;
             n5.Level = n5.Parent.Level + 1;
-            var actualTreeIncludedNodes = tree.IncludedNodes;
             var actualN2Children = n2.Children;
             var actualN4Parent = n4.Parent;
             var actualN5Parent = n5.Parent;
             var actualN4Level = n4.Level;
             var actualN5Level = n5.Level;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedN2Children, actualN2Children);
             Assert.AreEqual(expectedN4Parent, actualN4Parent);
             Assert.AreEqual(expectedN5Parent, actualN5Parent);
@@ -183,21 +160,18 @@ namespace ElasticTreeTest
 
             // check after add n4_node to n2_node
             tree.AddNode(n2, n4);
-            expectedTreeIncludedNodes = new List<Component> { root1, n2, n3, n4, n5 };
-            expectedN2Children = new List<Component> { n4 };
+            expectedN2Children = new List<Node<Data>> { n4 };
             expectedN4Parent = n2;
             expectedN5Parent = n4;
             expectedN4Level = 2;
             expectedN5Level = 3;
 
-            actualTreeIncludedNodes = tree.IncludedNodes;
             actualN2Children = n2.Children;
             actualN4Parent = n4.Parent;
             actualN5Parent = n5.Parent;
             actualN4Level = n4.Level;
             actualN5Level = n5.Level;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedN2Children, actualN2Children);
             Assert.AreEqual(expectedN4Parent, actualN4Parent);
             Assert.AreEqual(expectedN5Parent, actualN5Parent);
@@ -215,12 +189,6 @@ namespace ElasticTreeTest
             tree.DeleteHard(null);
         }
 
-        [ExpectedException(typeof(InvalidOperationException))]
-        [TestMethod]
-        public void DeleteHard_deleteNotExistNode()
-        {
-            tree.DeleteHard(n2);
-        }
 
         [TestMethod]
         public void DeleteHard_deleteNodeWithNoChild()
@@ -234,33 +202,27 @@ namespace ElasticTreeTest
              */
 
             // check start condition
-            var expectedTreeIncludedNodes = new List<Component> { root1, n2, n3, n4 };
-            var expectedN2Children = new List<Component> { n4 };
-            Component expectedN4Parent = n2;
+            var expectedN2Children = new List<Node<Data>> { n4 };
+            Node<Data> expectedN4Parent = n2;
 
             tree.AddNode(tree.RootNode, n2);
             tree.AddNode(tree.RootNode, n3);
             tree.AddNode(n2, n4);
-            var actualTreeIncludedNodes = tree.IncludedNodes;
             var actualN2Children = n2.Children;
             var actualN4Parent = n4.Parent;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedN2Children, actualN2Children);
             Assert.AreEqual(expectedN4Parent, actualN4Parent);
 
 
             // check after deleting
-            expectedTreeIncludedNodes = new List<Component> { root1, n2, n3 };
-            expectedN2Children = new List<Component> { };
+            expectedN2Children = new List<Node<Data>> { };
             expectedN4Parent = null;
 
             tree.DeleteHard(n4);
-            actualTreeIncludedNodes = tree.IncludedNodes;
             actualN2Children = n2.Children;
             actualN4Parent = n4.Parent;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedN2Children, actualN2Children);
             Assert.AreEqual(expectedN4Parent, actualN4Parent);
 
@@ -278,33 +240,27 @@ namespace ElasticTreeTest
              */
 
             // check start condition
-            var expectedTreeIncludedNodes = new List<Component> { root1, n2, n3, n4 };
-            var expectedRootChildren = new List<Component> { n2, n3 };
-            Component expectedN2Parent = tree.RootNode;
+            var expectedRootChildren = new List<Node<Data>> { n2, n3 };
+            Node<Data> expectedN2Parent = tree.RootNode;
 
             tree.AddNode(tree.RootNode, n2);
             tree.AddNode(tree.RootNode, n3);
             tree.AddNode(n2, n4);
-            var actualTreeIncludedNodes = tree.IncludedNodes;
             var actualRootChildren = tree.RootNode.Children;
             var actualN2Parent = n2.Parent;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
             Assert.AreEqual(expectedN2Parent, actualN2Parent);
 
 
             // check after deleting N2 node(with all child)
-            expectedTreeIncludedNodes = new List<Component> { root1, n3 };
-            expectedRootChildren = new List<Component> { n3 };
+            expectedRootChildren = new List<Node<Data>> { n3 };
             expectedN2Parent = null;
 
             tree.DeleteHard(n2);
-            actualTreeIncludedNodes = tree.IncludedNodes;
             actualRootChildren = tree.RootNode.Children;
             actualN2Parent = n2.Parent;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
             Assert.AreEqual(expectedN2Parent, actualN2Parent);
         }
@@ -330,10 +286,10 @@ namespace ElasticTreeTest
 
         [ExpectedException(typeof(InvalidOperationException))]
         [TestMethod]
-        public void DeleteSafe_deleteNotExistNode()
+        public void DeleteSafe_deleteRoot()
         {
-            tree.DeleteHard(n2);
-        }
+            tree.DeleteSafe(tree.RootNode);
+        }   
 
         [TestMethod]
         public void DeleteSafe_deleteNodeWithNoChild()
@@ -347,33 +303,27 @@ namespace ElasticTreeTest
              */
 
             // check start condition
-            var expectedTreeIncludedNodes = new List<Component> { root1, n2, n3, n4 };
-            var expectedN2Children = new List<Component> { n4 };
-            Component expectedN4Parent = n2;
+            var expectedN2Children = new List<Node<Data>> { n4 };
+            Node<Data> expectedN4Parent = n2;
 
             tree.AddNode(tree.RootNode, n2);
             tree.AddNode(tree.RootNode, n3);
             tree.AddNode(n2, n4);
-            var actualTreeIncludedNodes = tree.IncludedNodes;
             var actualN2Children = n2.Children;
             var actualN4Parent = n4.Parent;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedN2Children, actualN2Children);
             Assert.AreEqual(expectedN4Parent, actualN4Parent);
 
 
             // check after deleting
-            expectedTreeIncludedNodes = new List<Component> { root1, n2, n3 };
-            expectedN2Children = new List<Component> { };
+            expectedN2Children = new List<Node<Data>> { };
             expectedN4Parent = null;
 
             tree.DeleteSafe(n4);
-            actualTreeIncludedNodes = tree.IncludedNodes;
             actualN2Children = n2.Children;
             actualN4Parent = n4.Parent;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedN2Children, actualN2Children);
             Assert.AreEqual(expectedN4Parent, actualN4Parent);
         }
@@ -392,8 +342,7 @@ namespace ElasticTreeTest
                 */
 
             // check start condition
-            var expectedTreeIncludedNodes = new List<Component> { root1, n2, n3, n4, n5, n6 };
-            var expectedRootChildren = new List<Component> { n2, n3 };
+            var expectedRootChildren = new List<Node<Data>> { n2, n3 };
             var expectedN2Parent = tree.RootNode;
             var expectedN4Parent = n2;
             var expectedN5Parent = n2;
@@ -407,7 +356,6 @@ namespace ElasticTreeTest
             tree.AddNode(n2, n4);
             tree.AddNode(n2, n5);
             tree.AddNode(n4, n6);
-            var actualTreeIncludedNodes = tree.IncludedNodes;
             var actualRootChildren = tree.RootNode.Children;
             var actualN2Parent = n2.Parent;
             var actualN4Parent = n4.Parent;
@@ -418,7 +366,6 @@ namespace ElasticTreeTest
             var actualN6Level = n6.Level;
 
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
             Assert.AreEqual(expectedN2Parent, actualN2Parent);
             Assert.AreEqual(expectedN4Parent, actualN4Parent);
@@ -430,8 +377,7 @@ namespace ElasticTreeTest
 
 
             // check after deleting N2 node(with all child)
-            expectedTreeIncludedNodes = new List<Component> { root1, n3, n4, n5, n6 };
-            expectedRootChildren = new List<Component> { n3, n4, n5 };
+            expectedRootChildren = new List<Node<Data>> { n3, n4, n5 };
             expectedN2Parent = null;
             expectedN4Parent = tree.RootNode;
             expectedN5Parent = tree.RootNode;
@@ -441,7 +387,6 @@ namespace ElasticTreeTest
             expectedN6Level = 2;
 
             tree.DeleteSafe(n2);
-            actualTreeIncludedNodes = tree.IncludedNodes;
             actualRootChildren = tree.RootNode.Children;
             actualN2Parent = n2.Parent;
             actualN4Parent = n4.Parent;
@@ -451,8 +396,6 @@ namespace ElasticTreeTest
             actualN5Level = n5.Level;
             actualN6Level = n6.Level;
 
-
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
             Assert.AreEqual(expectedN2Parent, actualN2Parent);
             Assert.AreEqual(expectedN4Parent, actualN4Parent);
@@ -461,15 +404,6 @@ namespace ElasticTreeTest
             Assert.AreEqual(expectedN4Level, actualN4Level);
             Assert.AreEqual(expectedN5Level, actualN5Level);
             Assert.AreEqual(expectedN6Level, actualN6Level);
-
-
-        }
-
-        [ExpectedException(typeof(InvalidOperationException))]
-        [TestMethod]
-        public void DeleteSafe_deleteRoot()
-        {
-            tree.DeleteSafe(tree.RootNode);
         }
 
         #endregion
@@ -486,7 +420,7 @@ namespace ElasticTreeTest
         [TestMethod]
         public void Find_findRoot()
         {
-            var expectedAnswer = root1;
+            var expectedAnswer = root;
 
             tree.AddNode(tree.RootNode, n2);
             tree.AddNode(tree.RootNode, n3);
@@ -499,7 +433,7 @@ namespace ElasticTreeTest
         [TestMethod]
         public void Find_findNotExistNode()
         {
-            Component expectedAnswer = null;
+            Node<Data> expectedAnswer = null;
 
             tree.AddNode(tree.RootNode, n2);
             tree.AddNode(tree.RootNode, n3);
@@ -542,7 +476,7 @@ namespace ElasticTreeTest
         public void ForEach_StartFromNullNode()
         {
 
-            tree.ForEach((Component a) => { }, null);
+            tree.ForEach((Node<Data> a) => { }, null);
         }
 
         [TestMethod]
@@ -567,7 +501,7 @@ namespace ElasticTreeTest
             tree.AddNode(n3, n6);
             tree.AddNode(n4, n7);
             var actuarNodeCount = 0;
-            tree.ForEach((Component a) => { actuarNodeCount++; }, tree.RootNode);
+            tree.ForEach((Node<Data> a) => { actuarNodeCount++; }, tree.RootNode);
 
             Assert.AreEqual(expecterNodeCount, actuarNodeCount);
         }
@@ -594,53 +528,62 @@ namespace ElasticTreeTest
             tree.AddNode(n3, n6);
             tree.AddNode(n4, n7);
             var actuarNodeCount = 0;
-            tree.ForEach((Component a) => { actuarNodeCount++; }, n2);
+            tree.ForEach((Node<Data> a) => { actuarNodeCount++; }, n2);
 
             Assert.AreEqual(expecterNodeCount, actuarNodeCount);
-
         }
 
         #endregion
 
-        #region ReplaceChild
-        [ExpectedException(typeof(ArgumentNullException))]
+        #region isEmpty 
         [TestMethod]
-        public void ReplaceChild_nullParent()
+        public void IsEmpty_tree1Node()
         {
-            tree.AddNode(tree.RootNode, n2);
-            tree.AddNode(n2, n3);
-            tree.ReplaceChild(null, n3, n4);
+            var expectedAnswer = false;
+
+            var actualAnswer = tree.isEmpty();
+
+            Assert.AreEqual(expectedAnswer, actualAnswer);
         }
+
+        [TestMethod]
+        public void IsEmpty_tree0Node()
+        {
+            var expectedAnswer = true;
+
+            tree.AddNode(tree.RootNode, n2);
+            tree.AddNode(tree.RootNode, n3);
+            tree.AddNode(n2, n3);
+            tree.DeleteHard(tree.RootNode);  // del root
+            var actualAnswer = tree.isEmpty();
+
+            Assert.AreEqual(expectedAnswer, actualAnswer);
+        }
+
+        #endregion
+
+        #region Replace
 
         [ExpectedException(typeof(ArgumentNullException))]
         [TestMethod]
-        public void ReplaceChild_nullOldChild()
+        public void Replace_nullOldNode()
         {
             tree.AddNode(tree.RootNode, n2);
             tree.AddNode(n2, n3);
-            tree.ReplaceChild(n2, null, n4);
+            tree.Replace(null, n4);
         }
 
         [ExpectedException(typeof(ArgumentNullException))]
         [TestMethod]
-        public void ReplaceChild_nullNewChild()
+        public void Replace_nullNewChild()
         {
             tree.AddNode(tree.RootNode, n2);
             tree.AddNode(n2, n3);
-            tree.ReplaceChild(n2, n3, null);
-        }
-
-        [ExpectedException(typeof(InvalidOperationException))]
-        [TestMethod]
-        public void ReplaceChild_notExistOldChild()
-        {
-            tree.AddNode(tree.RootNode, n2);
-            tree.AddNode(n2, n3);
-            tree.ReplaceChild(n2, n4, n5);
+            tree.Replace(n3, null);
         }
 
         [TestMethod]
-        public void ReplaceChild()
+        public void Replace_fromOtherTree()
         {
             /*
             *        (1)       (7)
@@ -654,10 +597,9 @@ namespace ElasticTreeTest
             */
 
             // check start initialization
-            var expectedTreeIncludedNodes = new List<Component> { root1, n2, n3, n4, n5, n6 };
-            var expectedRootChildren = new List<Component> { n2, n3 };
-            Component expectedN2Parent = tree.RootNode;
-            Component expectedN7Parent = null;
+            var expectedRootChildren = new List<Node<Data>> { n2, n3 };
+            Node<Data> expectedN2Parent = tree.RootNode;
+            Node<Data> expectedN7Parent = null;
             var expectedN8Parent = n7;
             var expectedN7Level = 0;
             var expectedN8Level = 1;
@@ -667,12 +609,10 @@ namespace ElasticTreeTest
             tree.AddNode(n2, n4);
             tree.AddNode(n2, n5);
             tree.AddNode(n4, n6);
-            n7.AddChild(n8);
-            n8.SetParent(n7);
+            n7.Children.Add(n8);
+            n8.Parent = n7;
             n8.Level = 1;
-           
 
-            var actualTreeIncludedNodes = tree.IncludedNodes;
             var actualRootChildren = tree.RootNode.Children;
             var actualN2Parent = n2.Parent;
             var actualN7Parent = n7.Parent;
@@ -680,7 +620,6 @@ namespace ElasticTreeTest
             var actualN7Level = n7.Level;
             var actualN8Level = n8.Level;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
             Assert.AreEqual(expectedN2Parent, actualN2Parent);
             Assert.AreEqual(expectedN7Parent, actualN7Parent);
@@ -690,16 +629,14 @@ namespace ElasticTreeTest
 
 
             // replace (2) for (7)
-            expectedTreeIncludedNodes = new List<Component> { root1, n3, n7, n8 };
-            expectedRootChildren = new List<Component> { n7, n3 };
+            expectedRootChildren = new List<Node<Data>> { n7, n3 };
             expectedN2Parent = null;
             expectedN7Parent = tree.RootNode;
             expectedN8Parent = n7;
             expectedN7Level = 1;
             expectedN8Level = 2;
 
-            tree.ReplaceChild(tree.RootNode, n2, n7);
-            actualTreeIncludedNodes = tree.IncludedNodes;
+            tree.Replace(n2, n7);
             actualRootChildren = tree.RootNode.Children;
             actualN2Parent = n2.Parent;
             actualN7Parent = n7.Parent;
@@ -707,7 +644,6 @@ namespace ElasticTreeTest
             actualN7Level = n7.Level;
             actualN8Level = n8.Level;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
             Assert.AreEqual(expectedN2Parent, actualN2Parent);
             Assert.AreEqual(expectedN7Parent, actualN7Parent);
@@ -717,6 +653,134 @@ namespace ElasticTreeTest
 
         }
 
+        [TestMethod]
+        public void Replace_fromSameTree()
+        {
+            /*
+            *        (1)       
+            *        / \        
+            *      (2) (3)     
+            *      / \
+            *    (4) (5)
+            *     |
+            *    (6)
+            *    replace (3) for (4)
+            */
+
+            // check start initialization
+            var expectedRootChildren = new List<Node<Data>> { n2, n3 };
+            var expectedN2Children = new List<Node<Data>> { n4, n5 };
+            var expectedN3Parent = tree.RootNode;
+            var expectedN4Parent = n2;
+            var expectedN4Level = 2;
+            var expectedN6Level = 3;
+
+            tree.AddNode(tree.RootNode, n2);
+            tree.AddNode(tree.RootNode, n3);
+            tree.AddNode(n2, n4);
+            tree.AddNode(n2, n5);
+            tree.AddNode(n4, n6);
+
+            var actualRootChildren = tree.RootNode.Children;
+            var actualN2Children = n2.Children;
+            var actualN3Parent = n3.Parent;
+            var actualN4Parent = n4.Parent;
+            var actualN4Level = n4.Level;
+            var actualN6Level = n6.Level;
+
+            CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
+            CollectionAssert.AreEqual(expectedN2Children, actualN2Children);
+            Assert.AreEqual(expectedN3Parent, actualN3Parent);
+            Assert.AreEqual(expectedN4Parent, actualN4Parent);
+            Assert.AreEqual(expectedN4Level, actualN4Level);
+            Assert.AreEqual(expectedN6Level, actualN6Level);
+
+
+            // replace (3) for (4)
+            tree.Replace(n3, n4);
+            expectedRootChildren = new List<Node<Data>> { n2, n4 };
+            expectedN2Children = new List<Node<Data>> { n5 };
+            expectedN3Parent = null;
+            expectedN4Parent = tree.RootNode;
+            expectedN4Level = 1;
+            expectedN6Level = 2;
+
+            actualRootChildren = tree.RootNode.Children;
+            actualN2Children = n2.Children;
+            actualN3Parent = n3.Parent;
+            actualN4Parent = n4.Parent;
+            actualN4Level = n4.Level;
+            actualN6Level = n6.Level;
+
+            CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
+            CollectionAssert.AreEqual(expectedN2Children, actualN2Children);
+            Assert.AreEqual(expectedN3Parent, actualN3Parent);
+            Assert.AreEqual(expectedN4Parent, actualN4Parent);
+            Assert.AreEqual(expectedN4Level, actualN4Level);
+            Assert.AreEqual(expectedN6Level, actualN6Level);
+
+        }
+
+        [TestMethod]
+        public void Replace_root()
+        {
+            /*
+            *        (1)       
+            *        / \        
+            *      (2) (3)     
+            *      / \
+            *    (4) (5)
+            *     |
+            *    (6)
+            *    replace (1) for (4)
+            */
+
+            // check start initialization
+            var expectedRoot = root;
+            var expectedRootChildren = new List<Node<Data>> { n2, n3 };
+            var expectedN4Parent = n2;
+            var expectedN4Level = 2;
+            var expectedN6Level = 3;
+
+            tree.AddNode(tree.RootNode, n2);
+            tree.AddNode(tree.RootNode, n3);
+            tree.AddNode(n2, n4);
+            tree.AddNode(n2, n5);
+            tree.AddNode(n4, n6);
+
+            var actualRoot = tree.RootNode;
+            var actualRootChildren = tree.RootNode.Children;
+            var actualN4Parent = n4.Parent;
+            var actualN4Level = n4.Level;
+            var actualN6Level = n6.Level;
+
+            Assert.AreEqual(expectedRoot, actualRoot);
+            CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
+            Assert.AreEqual(expectedN4Parent, actualN4Parent);
+            Assert.AreEqual(expectedN4Level, actualN4Level);
+            Assert.AreEqual(expectedN6Level, actualN6Level);
+
+
+            // check after replace (1) -> (4)
+            tree.Replace(tree.RootNode, n4);
+            expectedRoot = n4;
+            expectedRootChildren = new List<Node<Data>> { n6 };
+            expectedN4Parent = null;
+            expectedN4Level = 0;
+            expectedN6Level = 1;
+
+            actualRoot = tree.RootNode;
+            actualRootChildren = tree.RootNode.Children;
+            actualN4Parent = n4.Parent;
+            actualN4Level = n4.Level;
+            actualN6Level = n6.Level;
+
+            Assert.AreEqual(expectedRoot, actualRoot);
+            CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
+            Assert.AreEqual(expectedN4Parent, actualN4Parent);
+            Assert.AreEqual(expectedN4Level, actualN4Level);
+            Assert.AreEqual(expectedN6Level, actualN6Level);
+        }
         #endregion
 
         #region ReplaceNode
@@ -739,33 +803,16 @@ namespace ElasticTreeTest
 
         [ExpectedException(typeof(InvalidOperationException))]
         [TestMethod]
-        public void ReplaceNode_replaceRoot()
+        public void ReplaceNode_NewNode_WithChildren()
         {
             tree.AddNode(tree.RootNode, n2);
-            tree.ReplaceNode(tree.RootNode, n3);
-        }
-
-        [ExpectedException(typeof(InvalidOperationException))]
-        [TestMethod]
-        public void ReplaceNode_replaceNotExistNode()
-        {
-            tree.AddNode(tree.RootNode, n2);
-            tree.ReplaceNode(n3, n4);
-        }
-
-        [ExpectedException(typeof(InvalidOperationException))]
-        [TestMethod]
-        public void ReplaceNode_replaceNewNodeHasChild()
-        {
-            tree.AddNode(tree.RootNode, n2);
-            n3.AddChild(n4);
+            tree.AddNode(tree.RootNode, n3);
+            tree.AddNode(n3, n4);
             tree.ReplaceNode(n2, n3);
         }
 
-
-
         [TestMethod]
-        public void ReplaceNode()
+        public void ReplaceNode_NodeNotInCurrentTree()
         {
             /*
             *        (1)       (7)
@@ -779,12 +826,10 @@ namespace ElasticTreeTest
             */
 
             // check start initialization
-            var expectedTreeIncludedNodes = new List<Component> { root1, n2, n3, n4, n5, n6 };
-            var expectedRootChildren = new List<Component> { n2, n3 };
-            Component expectedN2Parent = tree.RootNode;
-            var expectedN2Children = new List<Component> { n4, n5 };
-            Component expectedN7Parent = null;
-            var expectedN7Children = new List<Component> { };
+            var expectedRootChildren = new List<Node<Data>> { n2, n3 };
+            Node<Data> expectedN2Parent = tree.RootNode;
+            Node<Data> expectedN7Parent = null;
+            var expectedN7Children = new List<Node<Data>> { };
             var expectedN7Level = 0;
             var expectedN4Parent = n2;
             var expectedN5Parent = n2;
@@ -795,20 +840,16 @@ namespace ElasticTreeTest
             tree.AddNode(n2, n5);
             tree.AddNode(n4, n6);
 
-            var actualTreeIncludedNodes = tree.IncludedNodes;
             var actualRootChildren = tree.RootNode.Children;
             var actualN2Parent = n2.Parent;
-            var actualN2Children = n2.Children;
             var actualN7Parent = n7.Parent;
             var actualN7Children = n7.Children;
             var actualN7Level = n7.Level;
             var actualN4Parent = n4.Parent;
             var actualN5Parent = n5.Parent;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
             Assert.AreEqual(expectedN2Parent, actualN2Parent);
-            CollectionAssert.AreEqual(expectedN2Children, actualN2Children);
             Assert.AreEqual(expectedN7Parent, actualN7Parent);
             CollectionAssert.AreEqual(expectedN7Children, actualN7Children);
             Assert.AreEqual(expectedN7Level, actualN7Level);
@@ -817,165 +858,168 @@ namespace ElasticTreeTest
 
 
             // replace (2) node for (7)
-            expectedTreeIncludedNodes = new List<Component> { root1, n7, n3, n4, n5, n6 };
-            expectedRootChildren = new List<Component> { n7, n3 };
+            expectedRootChildren = new List<Node<Data>> { n7, n3 };
             expectedN2Parent = null;
-            expectedN2Children = new List<Component> { };
             expectedN7Parent = tree.RootNode;
-            expectedN7Children = new List<Component> { n4, n5 };
+            expectedN7Children = new List<Node<Data>> { n4, n5 };
             expectedN7Level = 1;
             expectedN4Parent = n7;
             expectedN5Parent = n7;
 
             tree.ReplaceNode(n2, n7);
-            actualTreeIncludedNodes = tree.IncludedNodes;
             actualRootChildren = tree.RootNode.Children;
             actualN2Parent = n2.Parent;
-            actualN2Children = n2.Children;
             actualN7Parent = n7.Parent;
             actualN7Children = n7.Children;
             actualN7Level = n7.Level;
             actualN4Parent = n4.Parent;
             actualN5Parent = n5.Parent;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
             Assert.AreEqual(expectedN2Parent, actualN2Parent);
-            CollectionAssert.AreEqual(expectedN2Children, actualN2Children);
             Assert.AreEqual(expectedN7Parent, actualN7Parent);
             CollectionAssert.AreEqual(expectedN7Children, actualN7Children);
             Assert.AreEqual(expectedN7Level, actualN7Level);
             Assert.AreEqual(expectedN4Parent, actualN4Parent);
             Assert.AreEqual(expectedN5Parent, actualN5Parent);
         }
-        #endregion
-
-        #region ReplaceRoot
-
-        [ExpectedException(typeof(ArgumentNullException))]
-        [TestMethod]
-        public void ReplaceRoot_null_newNode()
-        {
-            tree.AddNode(tree.RootNode, n2);
-            tree.ReplaceRoot(null);
-        }
-
-        [ExpectedException(typeof(InvalidOperationException))]
-        [TestMethod]
-        public void ReplaceRoot_replaceNewRootHasChild()
-        {
-            tree.AddNode(tree.RootNode, n2);
-            n3.AddChild(n4);
-            tree.ReplaceRoot(n3);
-        }
 
         [TestMethod]
-        public void ReplaceRoot()
+        public void ReplaceNode_NodeInCurrentTree()
         {
             /*
-            *        (1)    
+            *        (1)       
             *        / \       
-            *      (2) (3)        (5) - level 1
-            *       |
-            *      (4)
+            *      (2) (3)     
+            *      / \
+            *    (4) (5)
+            *     |
+            *    (6)
+            *    replace (2) for (3)
             */
 
             // check start initialization
-            var expectedTreeIncludedNodes = new List<Component> { root1, n2, n3, n4};
-            var expectedRootChildren = new List<Component> { n2, n3 };
-            var expectedN2Parent = root1;
-            var expectedN3Parent = root1;
-            var expectedN2Children = new List<Component> { n4 };
-            Component expectedN5Parent = null;
-            var expectedN5Children = new List<Component> { };
-            var expectedN2Level = 1;
-            var expectedN3Level = 1;
-            var expectedN4Level = 2;
-            var expectedN5Level = 1;
-            var expectedRoot = root1;
-            var expectedRoot1Children = new List<Component> { n2, n3 };
-
+            var expectedRootChildren = new List<Node<Data>> { n2, n3 };
+            var expectedN2Parent = tree.RootNode;
+            var expectedN3Parent = tree.RootNode;
+            var expectedN3Children = new List<Node<Data>> { };
+            var expectedN4Parent = n2;
+            var expectedN5Parent = n2;
 
             tree.AddNode(tree.RootNode, n2);
             tree.AddNode(tree.RootNode, n3);
             tree.AddNode(n2, n4);
-            n5.Level = 1;
+            tree.AddNode(n2, n5);
+            tree.AddNode(n4, n6);
 
-            var actualTreeIncludedNodes = tree.IncludedNodes;
             var actualRootChildren = tree.RootNode.Children;
             var actualN2Parent = n2.Parent;
-            var actualN3Parent = n2.Parent;
-            var actualN2Children = n2.Children;
+            var actualN3Parent = n3.Parent;
+            var actualN3Children = n3.Children;
+            var actualN4Parent = n4.Parent;
             var actualN5Parent = n5.Parent;
-            var actualN5Children = n5.Children;
-            var actualN2Level = n2.Level;
-            var actualN3Level = n3.Level;
-            var actualN4Level = n4.Level;
-            var actualN5Level = n5.Level;
-            var actualRoot = tree.RootNode;
-            var actualRoot1Children = root1.Children;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
             CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
             Assert.AreEqual(expectedN2Parent, actualN2Parent);
             Assert.AreEqual(expectedN3Parent, actualN3Parent);
-            CollectionAssert.AreEqual(expectedN2Children, actualN2Children);
+            CollectionAssert.AreEqual(expectedN3Children, actualN3Children);
+            Assert.AreEqual(expectedN4Parent, actualN4Parent);
             Assert.AreEqual(expectedN5Parent, actualN5Parent);
-            CollectionAssert.AreEqual(expectedN5Children, actualN5Children);
-            Assert.AreEqual(expectedN2Level, actualN2Level);
-            Assert.AreEqual(expectedN3Level, actualN3Level);
-            Assert.AreEqual(expectedN4Level, actualN4Level);
-            Assert.AreEqual(expectedN5Level, actualN5Level);
-            Assert.AreEqual(expectedRoot, actualRoot);
-            CollectionAssert.AreEqual(expectedRoot1Children, actualRoot1Children);
 
 
-            // replace root
-            expectedTreeIncludedNodes = new List<Component> { n5, n2, n3, n4 };
-            expectedRootChildren = new List<Component> { n2, n3 };
-            expectedN2Parent = n5;
-            expectedN3Parent = n5;
-            expectedN2Children = new List<Component> { n4 };
-            expectedN5Parent = null;
-            expectedN5Children = new List<Component> { n2, n3 };
-            expectedN2Level = 1;
-            expectedN3Level = 1;
-            expectedN4Level = 2;
-            expectedN5Level = 0;
-            expectedRoot = n5;
-            expectedRoot1Children = new List<Component> {  };
+            // replace (2) node for (7)
+            expectedRootChildren = new List<Node<Data>> { n3 };
+            expectedN2Parent = null;
+            expectedN3Parent = tree.RootNode;
+            expectedN3Children = new List<Node<Data>> { n4, n5 };
+            expectedN4Parent = n3;
+            expectedN5Parent = n3;
 
-            tree.ReplaceRoot(n5);
-            actualTreeIncludedNodes = tree.IncludedNodes;
+            tree.ReplaceNode(n2, n3);
             actualRootChildren = tree.RootNode.Children;
             actualN2Parent = n2.Parent;
-            actualN3Parent = n2.Parent;
-            actualN2Children = n2.Children;
+            actualN3Parent = n3.Parent;
+            actualN3Children = n3.Children;
+            actualN4Parent = n4.Parent;
             actualN5Parent = n5.Parent;
-            actualN5Children = n5.Children;
-            actualN2Level = n2.Level;
-            actualN3Level = n3.Level;
-            actualN4Level = n4.Level;
-            actualN5Level = n5.Level;
-            actualRoot = tree.RootNode;
-            actualRoot1Children = root1.Children;
 
-            CollectionAssert.AreEqual(expectedTreeIncludedNodes, actualTreeIncludedNodes);
+            CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
+            Assert.AreEqual(expectedN2Parent, actualN2Parent);
+            Assert.AreEqual(expectedN3Parent, actualN3Parent);
+            CollectionAssert.AreEqual(expectedN3Children, actualN3Children);
+            Assert.AreEqual(expectedN4Parent, actualN4Parent);
+            Assert.AreEqual(expectedN5Parent, actualN5Parent);
+        }
+
+        [TestMethod]
+        public void ReplaceNode_ReplaceRoot()
+        {
+            /*
+            *        (1)       
+            *        / \       
+            *      (2) (3)     
+            *      / \
+            *    (4) (5)
+            *     |
+            *    (6)
+            *    replace (1) for (5)
+            */
+
+            // check start initialization
+            var expectedRoot = root;
+            var expectedRootChildren = new List<Node<Data>> { n2, n3 };
+            var expectedN2Parent = root;
+            var expectedN3Parent = root;
+            var expectedN2Children = new List<Node<Data>> { n4, n5 };
+            var expectedN5Parent = n2;
+
+            tree.AddNode(tree.RootNode, n2);
+            tree.AddNode(tree.RootNode, n3);
+            tree.AddNode(n2, n4);
+            tree.AddNode(n2, n5);
+            tree.AddNode(n4, n6);
+
+            var actualRoot = tree.RootNode;
+            var actualRootChildren = tree.RootNode.Children;
+            var actualN2Parent = n2.Parent;
+            var actualN3Parent = n3.Parent;
+            var actualN2Children = n2.Children;
+            var actualN5Parent = n5.Parent;
+
+            Assert.AreEqual(expectedRoot, actualRoot);
             CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
             Assert.AreEqual(expectedN2Parent, actualN2Parent);
             Assert.AreEqual(expectedN3Parent, actualN3Parent);
             CollectionAssert.AreEqual(expectedN2Children, actualN2Children);
             Assert.AreEqual(expectedN5Parent, actualN5Parent);
-            CollectionAssert.AreEqual(expectedN5Children, actualN5Children);
-            Assert.AreEqual(expectedN2Level, actualN2Level);
-            Assert.AreEqual(expectedN3Level, actualN3Level);
-            Assert.AreEqual(expectedN4Level, actualN4Level);
-            Assert.AreEqual(expectedN5Level, actualN5Level);
+
+
+            // check after replace (1) node for (5)
+            expectedRoot = n5;
+            expectedRootChildren = new List<Node<Data>> { n2, n3 };
+            expectedN2Parent = n5;
+            expectedN3Parent = n5;
+            expectedN2Children = new List<Node<Data>> { n4 };
+            expectedN5Parent = null;
+
+            tree.ReplaceNode(tree.RootNode, n5);
+            actualRoot = tree.RootNode;
+            actualRootChildren = tree.RootNode.Children;
+            actualN2Parent = n2.Parent;
+            actualN3Parent = n3.Parent;
+            actualN2Children = n2.Children;
+            actualN5Parent = n5.Parent;
+
             Assert.AreEqual(expectedRoot, actualRoot);
-            CollectionAssert.AreEqual(expectedRoot1Children, actualRoot1Children);
+            CollectionAssert.AreEqual(expectedRootChildren, actualRootChildren);
+            Assert.AreEqual(expectedN2Parent, actualN2Parent);
+            Assert.AreEqual(expectedN3Parent, actualN3Parent);
+            CollectionAssert.AreEqual(expectedN2Children, actualN2Children);
+            Assert.AreEqual(expectedN5Parent, actualN5Parent);
         }
 
         #endregion
+
 
         #region Siblings
 
@@ -991,11 +1035,11 @@ namespace ElasticTreeTest
         [TestMethod]
         public void Sibling_RootSiblings()
         {
-            var expectedSiblings = new List<Component> { };
+            var expectedSiblings = new List<Node<Data>> { };
             tree.AddNode(tree.RootNode, n2);
             tree.AddNode(tree.RootNode, n3);
 
-            var actualSiblings = new List<Component> { };
+            var actualSiblings = new List<Node<Data>> { };
 
             foreach (var sibling in tree.Siblings(tree.RootNode))
             {
@@ -1009,16 +1053,16 @@ namespace ElasticTreeTest
         [TestMethod]
         public void Sibling_NoSibling()
         {
-           /*
-            *        (  1  )    
-            *        /  |  \   
-            *      (2) (3) (4)       
-            *       |       |
-            *      (5)     (6)
-            *      
-            *      (6) - siblings
-            */
-            var expectedSiblings = new List<Component> { };
+            /*
+             *        (  1  )    
+             *        /  |  \   
+             *      (2) (3) (4)       
+             *       |       |
+             *      (5)     (6)
+             *      
+             *      (6) - siblings
+             */
+            var expectedSiblings = new List<Node<Data>> { };
 
             tree.AddNode(tree.RootNode, n2);
             tree.AddNode(tree.RootNode, n3);
@@ -1026,7 +1070,7 @@ namespace ElasticTreeTest
             tree.AddNode(n2, n5);
             tree.AddNode(n4, n6);
 
-            var actualSiblings = new List<Component> { };
+            var actualSiblings = new List<Node<Data>> { };
 
             foreach (var sibling in tree.Siblings(n6))
             {
@@ -1049,7 +1093,7 @@ namespace ElasticTreeTest
              *      
              *      (4) - siblings
              */
-            var expectedSiblings = new List<Component> { n2, n3 };
+            var expectedSiblings = new List<Node<Data>> { n2, n3 };
 
             tree.AddNode(tree.RootNode, n2);
             tree.AddNode(tree.RootNode, n3);
@@ -1057,7 +1101,7 @@ namespace ElasticTreeTest
             tree.AddNode(n2, n5);
             tree.AddNode(n4, n6);
 
-            var actualSiblings = new List<Component> { };
+            var actualSiblings = new List<Node<Data>> { };
 
             foreach (var sibling in tree.Siblings(n4))
             {
@@ -1069,13 +1113,53 @@ namespace ElasticTreeTest
         }
         #endregion
 
+        #region Size
+        [TestMethod]
+        public void Size_OnlyRoot()
+        {
+            var expectedSize = 1;
+
+            var actualSize = 0;
+            tree.ForEach((Node<Data> a) => { actualSize++; });
+
+            Assert.AreEqual(expectedSize, actualSize);
+        }
+
+        [TestMethod]
+        public void Size_2Branche()
+        {
+            /*
+            *        (1)       
+            *       /   \       
+            *     (2)   (3)     
+            *     /\    |
+            *   (4)(5) (6)
+            *   
+            */
+
+            // check start initialization
+            var expectedSize = 6;
+
+            tree.AddNode(tree.RootNode, n2);
+            tree.AddNode(tree.RootNode, n3);
+            tree.AddNode(n2, n4);
+            tree.AddNode(n2, n5);
+            tree.AddNode(n3, n6);
+
+            var actualSize = 0;
+            tree.ForEach((Node<Data> a) => { actualSize++; });
+
+            Assert.AreEqual(expectedSize, actualSize);
+        }
+        #endregion
+
         #region UpwardForEach
 
         [ExpectedException(typeof(ArgumentNullException))]
         [TestMethod]
         public void UpwardForEach_NullStartNode()
         {
-            tree.UpwardForEach((Component a) => { }, null);
+            tree.UpwardForEach((Node<Data> a) => { }, null);
         }
 
         [TestMethod]
@@ -1101,8 +1185,8 @@ namespace ElasticTreeTest
             var actualDepthN6 = 0;
             var actualDepthN3 = 0;
 
-            tree.UpwardForEach((Component a) => { actualDepthN6++; }, n6);
-            tree.UpwardForEach((Component a) => { actualDepthN3++; }, n3);
+            tree.UpwardForEach((Node<Data> a) => { actualDepthN6++; }, n6);
+            tree.UpwardForEach((Node<Data> a) => { actualDepthN3++; }, n3);
 
             Assert.AreEqual(expectedDepthN6, actualDepthN6);
             Assert.AreEqual(expectedDepthN3, actualDepthN3);

@@ -1,33 +1,30 @@
-﻿using ElasticTree.src.Composite;
-using ElasticTree.src.DataClass;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElasticTree.src
+namespace Trees.src.Tree
 {
-    public class SimpleData : Data
+    public class Data 
     {
-        public List<int> DataCollection { get; protected set; }
+        public List<int> DataCollection { get; set; }
 
-        public SimpleData(List<int> data)
+        public Data(List<int> data)
         {
             DataCollection = data;
         }
 
 
-
-        public override bool Equals(Data other)
+        public bool Equals(Data other)
         {
-            if (!(other is SimpleData))
+            if (!(other is Data))
                 return false;
 
-            var instance = other as SimpleData;
+            var instance = other as Data;
             if (instance.DataCollection.Count != DataCollection.Count)
                 return false;
-            foreach(var e in instance.DataCollection)
+            foreach (var e in instance.DataCollection)
             {
                 if (DataCollection.IndexOf(e) == -1)
                     return false;
@@ -35,13 +32,7 @@ namespace ElasticTree.src
             return true;
         }
 
-        public override void SetData(Data data)
-        {
-            if (!(data is SimpleData))
-                throw new InvalidOperationException("Can't set this data");
-            DataCollection = (data as SimpleData).DataCollection;
-        }
-
+        
         public override string ToString()
         {
             var str = new StringBuilder();
