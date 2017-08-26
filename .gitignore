@@ -9,10 +9,10 @@ Trees/Trees.csproj
 Trees/Trees.csproj.user
 Trees/Program.cs
 
-TreesTest/bin/
-TreesTest/obj/
-TreesTest/Properties/
-TreesTest/TreesTests.csproj
-TreesTest/TreesTests.csproj.user
+TreesTests/bin/
+TreesTests/obj/
+TreesTests/Properties/
+TreesTests/TreesTests.csproj
+TreesTests/TreesTests.csproj.user
 
 Trees.sln
